@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca digital - Catálogo y préstamos de libros</title>
+  <meta name="description" content="Biblioteca digital para gestionar un catálogo de libros, prestarlos, devolverlos y consultar el historial de préstamos, hecha con HTML, CSS y JavaScript.">
+  <link rel="canonical" href="https://marlomalejandrosp-sudo.github.io/biblioteca-digital/">
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="styles.css">
+  <script src="logica.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <img class="logo" alt="Logotipo de la biblioteca digital" src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Cpath%20fill='%232e9d5b'%20d='M3%204h8v16H3zM13%204h8v16h-8z'/%3E%3C/svg%3E">
+      <h1>Biblioteca digital</h1>
+    </div>
+    <nav aria-label="Principal">
+      <a href="#catalogo" data-vista="catalogo" class="activo" aria-current="page">Catálogo</a>
+      <a href="#prestamos" data-vista="prestamos" id="nav-prestamos">Mis préstamos (0)</a>
+      <a href="#formulario" data-vista="formulario">Agregar libro</a>
+      <a href="#resumen" data-vista="resumen">Resumen y ajustes</a>
+    </nav>
+    <p id="saludo" class="saludo"></p>
+  </header>
+
+  <main>
+    <p id="aviso" class="aviso" role="status"></p>
+
+    <!-- Vista 1 -->
+    <section id="vista-catalogo" class="vista" aria-labelledby="t-catalogo">
+      <h2 id="t-catalogo">Catálogo</h2>
+      <div class="filtros">
+        <div class="campo"><label for="buscar">Buscar por título o autor</label>
+          <input id="buscar" type="search" autocomplete="off"></div>
+        <div class="campo"><label for="filtro-genero">Género</label>
+          <select id="filtro-genero"></select></div>
+        <div class="campo"><label for="orden-campo">Ordenar por</label>
+          <select id="orden-campo">
+            <option value="titulo">Título</option><option value="autor">Autor</option><option value="anio">Año</option>
+          </select></div>
+        <div class="campo"><label for="orden-dir">Sentido</label>
+          <select id="orden-dir">
+            <option value="asc">Ascendente</option><option value="desc">Descendente</option>
+          </select></div>
+      </div>
+      <div class="estados" role="group" aria-label="Filtrar por estado">
+        <button type="button" data-estado="todos" class="activo" aria-pressed="true">Todos</button>
+        <button type="button" data-estado="disponibles" aria-pressed="false">Disponibles</button>
+        <button type="button" data-estado="prestados" aria-pressed="false">Prestados</button>
+      </div>
+      <p id="contador" aria-live="polite"></p>
+      <div id="tarjetas" class="tarjetas"></div>
+    </section>
+
+    <!-- Vista 2 -->
+    <section id="vista-prestamos" class="vista" aria-labelledby="t-prestamos" hidden>
+      <h2 id="t-prestamos">Mis préstamos</h2>
+      <p id="sin-activos">No hay ningún préstamo activo.</p>
+      <ul id="activos" class="lista"></ul>
+      <h3>Historial</h3>
+      <p id="sin-historial">Todavía no hay préstamos devueltos.</p>
+      <ul id="historial" class="lista"></ul>
+    </section>
+
+    <!-- Vista 3 -->
+    <section id="vista-formulario" class="vista" aria-labelledby="form-titulo" hidden>
+      <h2 id="form-titulo">Agregar libro</h2>
+      <form id="form-libro" novalidate>
+        <div class="campo"><label for="f-titulo">Título</label>
+          <input id="f-titulo" aria-describedby="err-titulo"><p id="err-titulo" class="error"></p></div>
+        <div class="campo"><label for="f-autor">Autor</label>
+          <input id="f-autor" aria-describedby="err-autor"><p id="err-autor" class="error"></p></div>
+        <div class="campo"><label for="f-anio">Año</label>
+          <input id="f-anio" type="number" aria-describedby="err-anio"><p id="err-anio" class="error"></p></div>
+        <div class="campo"><label for="f-genero">Género</label>
+          <select id="f-genero" aria-describedby="err-genero"></select><p id="err-genero" class="error"></p></div>
+        <div class="campo"><label for="f-comentario">Comentario</label>
+          <textarea id="f-comentario" rows="3" maxlength="120" aria-describedby="restantes err-comentario"></textarea>
+          <p id="restantes" aria-live="polite"></p><p id="err-comentario" class="error"></p></div>
+        <div class="campo"><label><input id="f-coleccion" type="checkbox" aria-describedby="err-coleccion"> Ejemplar de colección</label>
+          <p id="err-coleccion" class="error"></p></div>
+        <div class="acciones">
+          <button id="f-enviar" type="submit" class="btn">Agregar libro</button>
+          <button id="f-cancelar" type="button" hidden>Cancelar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Vista 4 -->
+    <section id="vista-resumen" class="vista" aria-labelledby="t-resumen" hidden>
+      <h2 id="t-resumen">Resumen y ajustes</h2>
+      <ul id="resumen" class="lista"></ul>
+      <h3>Libros por género</h3>
+      <ul id="por-genero" class="lista"></ul>
+      <h3>Ajustes</h3>
+      <div class="ajustes">
+        <button id="tema" type="button" aria-pressed="false">Cambiar a tema oscuro</button>
+        <div class="campo"><label for="nombre">Tu nombre</label>
+          <input id="nombre" maxlength="40" autocomplete="given-name"></div>
+        <button id="restablecer" type="button">Restablecer biblioteca</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>&copy; 2026 Biblioteca digital - Programación Web</p>
+  </footer>
+
+  <!-- Modal propio (prestar, eliminar y restablecer) -->
+  <div id="modal-fondo" class="fondo" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <form id="modal-form" novalidate>
+        <h2 id="modal-titulo"></h2>
+        <p id="modal-texto"></p>
+        <div id="modal-campo" class="campo" hidden>
+          <label for="modal-input">Nombre de la persona</label>
+          <input id="modal-input" autocomplete="off" aria-describedby="modal-error">
+        </div>
+        <p id="modal-error" class="error" role="alert"></p>
+        <div class="acciones fin">
+          <button id="modal-cancelar" type="button">Cancelar</button>
+          <button id="modal-ok" type="submit" class="btn"></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
